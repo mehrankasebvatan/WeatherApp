@@ -5,15 +5,6 @@ plugins {
 }
 
 android {
-
-    applicationVariants.all {
-        outputs.all {
-            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            val newName = "WeatherApp-${name}-${versionName}.apk"
-            outputImpl.outputFileName = newName
-        }
-    }
-
     namespace = "ir.kasebvatan.weatherapp"
     compileSdk = 36
 
