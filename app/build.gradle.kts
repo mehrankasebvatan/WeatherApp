@@ -5,6 +5,27 @@ plugins {
 }
 
 android {
+
+    signingConfigs {
+        create("release") {
+            val storeFile = System.getenv("RELEASE_STORE_FILE")
+            if (storeFile != null) {
+                this.storeFile = file(storeFile)
+                this.storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                this.keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                this.keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val newName = "WeatherApp-${name}-${versionName}.apk"
+            outputImpl.outputFileName = newName
+        }
+    }
+
     namespace = "ir.kasebvatan.weatherapp"
     compileSdk = 36
 
@@ -14,20 +35,22 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
     buildTypes {
-        release {
-            isDebuggable = true
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // This line connects the release build to your signing key
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

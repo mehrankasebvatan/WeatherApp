@@ -20,10 +20,19 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.RELEASE_STORE_FILE }}" | base64 --decode > ${{ github.workspace }}/release.keystore
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build Release APK
+      - name: Build Signed Release APK
+        env:
+          RELEASE_STORE_FILE: ${{ github.workspace }}/release.keystore
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
       - name: Upload release APK to GitHub Releases
